@@ -1,0 +1,38 @@
+VAR int ret,i
+VAR string para
+MAIN    
+    ret <- 0
+    i <- 0
+    
+    para <- getenv "#1"
+    
+    print "file:[para]"
+    
+    open vid:0    
+    clip vid:0 "[para]"
+   
+        
+%play with change mode sequence for 12 times and finish test
+
+    while i<4
+    
+       apply vid:0 mode:I   
+       wait 2000
+       
+       apply vid:0 mode:IP   
+       wait 2000
+       
+       apply vid:0 mode:normal   
+       wait 2000       
+           
+       i <- add i 1
+    
+    wend
+
+   if ret<0
+    exit -1
+   else
+    exit 1
+   endif 
+   
+END

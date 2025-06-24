@@ -1,0 +1,47 @@
+VAR int i
+VAR string para
+MAIN    
+    para <- getenv "#1"
+     i <- 0
+    
+    print "para:[para]"
+    
+    open vid:0    
+    clip vid:0 "[para]"
+    
+  
+    para <- getenv "#2"
+    
+    print "para:[para]"
+    
+    open vid:1    
+    clip vid:1 "[para]"
+    
+%play with start stop sequence for 4 times and finish test	
+
+    while i<4
+   
+       wait 5000
+    
+       print "wrap:[i]"
+       
+       stop vid:0  
+       stop vid:1 	    	   	 
+   	 
+   	 wait 1000
+   	 
+   	 start vid:0 
+   	 start vid:1  	 
+   	       
+       i <- add i 1
+    
+    wend
+   
+   print "ret=[ret]"
+   if ret<0
+    exit -1
+   else
+    exit 1
+   endif 
+   
+END

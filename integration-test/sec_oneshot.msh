@@ -1,0 +1,68 @@
+VAR int ret, i
+
+MAIN
+   i <- 0
+   tune 0
+   ret <- tune 626000 500
+   if ret!= 0
+      print "Tuning failed"
+      exit -1   % FAIL
+   endif
+   print ">>>>>>>>> Frequent oneshot..."
+   ret <- filter 0 0 0 one
+   if ret == 0
+      print "Failed to set oneshot PMT"
+      exit -1   % FAIL
+   endif
+   while i < 100
+      print "Loop [i]..."
+      
+      %print "Loop [i].1..."
+      ret <- try_read 0 5000
+      if ret < 0
+         print "Failed to query PMT"
+         exit -1   % FAIL
+      endif
+      if ret == 0
+         print "Failed to detect PMT"
+         exit -1   % FAIL
+      endif
+      
+       %print "Loop [i].2..."
+      ret <- read 0
+      if ret < 0
+         print "Failed to read PMT"
+         exit -1   % FAIL
+      endif
+      if ret == 0
+         print "PMT signaled, but not available"
+         exit -1   % FAIL 
+      endif
+      
+      %print "Loop [i].3..."
+      ret <- try_read 0 5000
+      if ret < 0
+         print "Failed to query PMT (2nd time)"
+         exit -1   % FAIL
+      endif
+      if ret != 0
+         print "PMT present after one-shot"
+         exit -1   % FAIL
+      endif
+      
+      %print "Loop [i].4..."
+      ret <- enable 0 1
+      if ret != 0
+         print "Failed to enable PMT"
+         exit -1   % FAIL
+      endif
+      
+      i <- add i 1
+   wend
+   
+   ret <- del 0
+   if ret != 0
+      print "Failed to destroy PMT"
+      exit -1   % FAIL
+   endif
+END

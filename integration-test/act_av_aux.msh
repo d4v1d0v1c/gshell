@@ -1,0 +1,211 @@
+VAR int freq,vpid,apid,pcrpid,type,ad,cp,mute,ret,tmpret,tmp
+VAR string para
+MAIN
+
+% MSP initialization part ************************************************
+
+%abp_msp_analog_power_up
+rfr 0x00071824
+wtr 0x00071848 0x00000002
+wtr 0x00071848 0x00008000
+
+%route Vol1 and Vol2 to headphones
+rfr 0x00071824
+wtr 0x00071848 0x00000041
+wtr 0x00071848 0x00006263
+
+%route Vol1 and Vol2 to speakers
+rfr 0x00071824
+wtr 0x00071848 0x0000003f
+wtr 0x00071848 0x00006263
+
+%set source for Vol1 to AUX L
+rfr 0x00071824
+wtr 0x00071848 0x00008052
+wtr 0x00071848 0x00000042
+
+%set source for Vol2 to AUX R
+rfr 0x00071824
+wtr 0x00071848 0x00008053
+wtr 0x00071848 0x00000043
+
+%Vol1 set
+rfr 0x00071824
+wtr 0x00071848 0x00000052
+wtr 0x00071848 0
+
+%Vol2 set
+rfr 0x00071824
+wtr 0x00071848 0x00000053
+wtr 0x00071848 0
+
+%Master Vol set
+rfr 0x00071824
+wtr 0x00071848 0x00000050
+wtr 0x00071848 0
+
+%Enable SPDIF1 in, source SPDIF_IN
+rfr 0x00071824
+wtr 0x00071848 0x00000004
+wtr 0x00071848 0x00008000
+
+%Enable SPDIF2 in, source SPDIF_IN
+rfr 0x00071824
+wtr 0x00071848 0x00000004
+wtr 0x00071848 0x00008000
+
+%Rote DTV spdif out to SPDIF Out pin
+rfr 0x00071824
+wtr 0x00071848 0x00000003
+wtr 0x00071848 0x00000600
+
+% end of MSP initialization part *********************************************
+
+% common part with tuning and in selection    
+    ret <- 0
+    para <- getenv "#1"    
+    tmp <- integer para
+    if tmp=0
+      open in:0      
+		open dmx:0
+		route in:0 dmx:0
+		tmpret <- start dmx:0
+		ret <- add ret tmpret
+	 	tmpret <- start in:0
+	 	ret <- add ret tmpret
+    else
+      freq <- tmp
+      open fe:1
+      open in:1
+      open dmx:0
+      route fe:1 in:1
+	   route in:1 dmx:0
+	   ret <- start fe:1 "ter:[freq]"      
+	   tmpret <- start dmx:0
+	   ret <- add ret tmpret
+	 	tmpret <- start in:1
+	 	ret <- add ret tmpret
+    endif
+            
+    print "freq=[freq]"
+% end of common part
+
+% get video PID    
+    para <- getenv "#2"
+    if para=""
+      vpid <- 512
+    else
+      vpid <- integer para
+    endif
+
+% get audio PID    
+    para <- getenv "#3"
+    if para=""
+      apid <- 650
+    else
+      apid <- integer para
+    endif
+    
+% get pcr PID    
+    para <- getenv "#4"
+    if para=""
+      pcrpid <- 128
+    else
+      pcrpid <- integer para
+    endif
+    
+% get decoder type (standard)
+    para <- getenv "#5"   
+    if para="AUTO"    
+      type <- 1
+    endif
+    if para="PCM"
+      type <- 2
+    endif
+    if para="MPEG"
+      type <- 32
+    endif
+    if para="AC3"
+      type <- 64
+    endif
+    if para="DTS"
+      type <- 128        
+    endif
+    if para=""
+      type <- 32
+    endif
+    
+% get AD setting    
+    para <- getenv "#6"
+    if para=""
+      ad <- 0
+    else
+      ad <- integer para
+    endif
+
+% get copy parameter
+    para <- getenv "#7"
+    if para=""
+      cp <- 0
+    else
+      cp <- integer para
+    endif
+
+% get mute parameter
+    para <- getenv "#8"
+    if para=""
+      mute <- 0
+    else
+      mute <- integer para
+    endif
+        
+% start video and audio on AUX
+	 open vid:0
+	 open dmx:0.0
+	 open aud:1
+	 
+	 if cp>0
+	 	open sout:0
+	 	clone aud:1 sout:0
+	 endif
+	 	 
+	 open dmx:0.1
+	 
+	 apply aud:1 "ad:[ad]"
+	 apply aud:1 sync:1
+	 apply aud:1 "mode:[type]"
+	 apply aud:1 "mute:[mute]"
+	 
+	 route dmx:0.0 vid:0
+	 setpid dmx:0.0 "pid:[vpid]"
+	 route dmx:0.1 aud:1
+	 setpid dmx:0.1 "pid:[apid]"
+	 
+	 tmpret <- start vid:0
+	 ret <- add ret tmpret
+	 tmpret <- start aud:1	 
+	 ret <- add ret tmpret
+	 if cp>0
+	   tmpret <- start sout:0
+	   ret <- add ret tmpret
+	 endif
+	 
+	 open dmx:0.2
+	 pcr dmx:0.2 "pid:[pcrpid]"
+	 tmpret <- start dmx:0.2
+	 ret <- add ret tmpret
+	 tmpret <- start dmx:0.0
+	 ret <- add ret tmpret
+	 tmpret <- start dmx:0.1
+	 ret <- add ret tmpret
+	 
+%play for 10 seconds and finish test	 
+	 wait 20000
+	 print "ret=[ret]"
+	 if ret<0
+       exit -1
+    else
+       exit 1
+    endif	         	 
+    
+END

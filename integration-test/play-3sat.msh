@@ -1,0 +1,46 @@
+MAIN
+% Memmode 51
+memmode 51
+
+% Increase burst size for graphics channel
+wtr 0x11088c 0x10
+wtr 0x1108a0 0xf
+
+% Tune to DVB-T 658MHz 
+      open fe:1
+      open in:1
+      open dmx:0
+      route fe:1 in:1
+      route in:1 dmx:0
+      start fe:1 ter:658000
+      start dmx:0
+      start in:1   
+% Start decoding pcrPID, PID: 561     
+      open dmx:0.2
+      pcr dmx:0.2 pid:561
+      start dmx:0.2
+% Start decoding videoPID, PID: 561       
+      open vid:0
+      open dmx:0.0
+      route dmx:0.0 vid:0
+      setpid dmx:0.0 pid:561
+      start vid:0
+      start dmx:0.0
+% Start decoding audioPID, PID: 562     
+      open aud:0
+      open dmx:0.1
+      route dmx:0.1 aud:0
+      setpid dmx:0.1 pid:562
+      start aud:0
+      start dmx:0.1
+
+% Reset SCC0/2/8
+wait 1500
+wtr 0x110004 0x0
+wtr 0x110004 0x1
+wtr 0x110104 0x0
+wtr 0x110104 0x1
+wtr 0x110404 0x0
+wtr 0x110404 0x1
+
+END

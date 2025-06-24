@@ -1,0 +1,33 @@
+VAR int freq vpid apid ppid ret
+
+MAIN
+
+   freq <- 554000
+   vpid <- 257
+   apid <- 733
+   ppid <- 257
+   
+   ret <- -1
+   
+   tune 0
+   
+   filter 0 0x00 0
+   
+   print "### TEST ### Tuning to [freq_i]........."
+   ret <- tune freq 1000
+   if ret != 0
+      print "Failed to tune"
+      exit -1   % FAIL
+   endif
+   
+   ret <- avplay vpid apid ppid mpeg 
+   if ret != 0
+      print "Failed to play"
+      exit -1   % FAIL
+   endif
+   
+   finish
+   
+   del 0
+
+END

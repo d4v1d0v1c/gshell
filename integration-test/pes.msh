@@ -1,0 +1,32 @@
+VAR int ret, i
+
+MAIN
+   i <- 0
+   tune 0
+   ret <- tune 626000 500
+   if ret!= 0
+      print "Tuning failed"
+      exit -1   % FAIL
+   endif
+   print ">>>>>>>>> PES reception ..."
+   
+   ret <- pes 0 2321 pes
+   if ret == 0
+      print "Failed to set PES"
+      exit -1   % FAIL
+   endif
+   
+   while i < 100
+      print "Loop [i]..."
+      ret <- read 0 500
+      print "Read [ret] bytes"
+      
+      i <- add i 1
+   wend
+   
+   ret <- del 0
+   if ret != 0
+   print "Failed to destroy PES"
+      exit -1   % FAIL
+   endif
+END

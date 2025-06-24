@@ -1,0 +1,33 @@
+%Magic' to control DTVvolume on speakers and headphones ;-)
+VAR string para
+VAR int volume
+
+para <- getenv "#1"
+if para=""
+   volume <- 0x30
+else
+   volume <- integer para
+   volume <- sub volume 50
+   volume <- mult volume 400
+endif   
+      
+
+%volume set
+rfr 0x00071824
+wtr 0x00071848 0x00000052
+wtr 0x00071848 volume
+
+%volume set
+rfr 0x00071824
+wtr 0x00071848 0x00000053
+wtr 0x00071848 volume
+
+%volume set
+rfr 0x00071824
+wtr 0x00071848 0x00000054
+wtr 0x00071848 volume
+
+%volume set
+rfr 0x00071824
+wtr 0x00071848 0x00000055
+wtr 0x00071848 volume

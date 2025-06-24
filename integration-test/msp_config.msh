@@ -1,0 +1,70 @@
+%Magic' to get DTV sound on speakers and headphones ;-)
+
+VAR int ret
+
+SUB wait_msp_ready
+   ret <- 0x800
+   while  ret != 0
+      ret <- rfr 0x00071824
+      ret <- and ret 0x800
+   wend
+return
+
+MAIN
+   %abp_msp_hp_enable
+   %abp_msp_analog_power_up
+   call wait_msp_ready
+   wtr 0x00071848 0x00000002
+   wtr 0x00071848 0x00008000
+   
+   call wait_msp_ready
+   wtr 0x00071848 0x00000041
+   wtr 0x00071848 0x00006263
+   
+   call wait_msp_ready
+   wtr 0x00071848 0x00008052
+   wtr 0x00071848 0x0000003a
+   
+   call wait_msp_ready
+   wtr 0x00071848 0x00008053
+   wtr 0x00071848 0x0000003b
+   
+   
+   %volume set
+   call wait_msp_ready
+   wtr 0x00071848 0x00000052
+   wtr 0x00071848 0x00000030
+   
+   %volume set
+   call wait_msp_ready
+   wtr 0x00071848 0x00000053
+   wtr 0x00071848 0x00000030
+   
+   %abp_msp_main_enable
+   %abp_msp_analog_power_up
+   call wait_msp_ready
+   wtr 0x00071848 0x00000002
+   wtr 0x00071848 0x00008000
+   
+   call wait_msp_ready
+   wtr 0x00071848 0x0000003f
+   wtr 0x00071848 0x00006465
+   
+   call wait_msp_ready
+   wtr 0x00071848 0x00008054
+   wtr 0x00071848 0x0000003a
+   
+   call wait_msp_ready
+   wtr 0x00071848 0x00008055
+   wtr 0x00071848 0x0000003b
+   
+   %volume set
+   call wait_msp_ready
+   wtr 0x00071848 0x00000054
+   wtr 0x00071848 0x00000030
+   
+   %volume set
+   call wait_msp_ready
+   wtr 0x00071848 0x00000055
+   wtr 0x00071848 0x00000030
+END

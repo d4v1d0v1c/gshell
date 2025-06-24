@@ -1,0 +1,34 @@
+% example of device naming:
+%
+% [dev_type]:[adapter_no]:[dev_no].[read_instance]
+% 'dmx:0:0.0' will open /dev/dvb/adapter0/demux0 for reading (dmx filter instance)
+% 'vid:0:0' will open /dev/dvb/adapter0/video0 for RDWR (video decoder control instance)
+%
+% if 'adapter' field is ommited, by default it will be used adapter0 
+%
+% 'vid:0:0' /dev/dvb/adapter0/video0 for RDWR
+% 'vid:0'   /dev/dvb/adapter0/video0 for RDWR (same as above)
+% 'vid:1:0' /dev/dvb/adapter1/video0 for RDWR
+%
+% 'dmx:0:0.0' will open /dev/dvb/adapter0/demux0 for reading (and assign to filter No. 0)
+% 'dmx:0.0'   same as above
+% 'dmx:1:0.0' will open /dev/dvb/adapter1/demux0 for reading (and assign to filter No. 0 on given adapter)
+
+MAIN
+    open vid:0:0
+    open dmx:0:0.0
+    
+    open aud:0:0
+    open dmx:0:0.1
+    
+    route dmx:0:0.0 vid:0:0
+    setpid dmx:0:0.0 pid:600
+    
+    route dmx:0:0.1 aud:0:0
+    setpid dmx:0:0.1 pid:601
+    start vid:0:0
+    start dmx:0:0.0
+    
+    start aud:0:0
+    start dmx:0:0.1
+END

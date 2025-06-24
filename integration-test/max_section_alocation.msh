@@ -1,0 +1,82 @@
+VAR int ret, pid, timeout, filter_number
+VAR string para, dev
+
+
+MAIN
+
+   ret <- 0
+
+   ret <- open in:0
+   if ret < 0
+         exit -1
+      endif
+      
+   ret <- open dmx:0
+   if ret < 0
+         exit -1
+      endif
+      
+   route in:0 dmx:0
+
+      
+   ret <- start dmx:0
+   if ret < 0
+         exit -1
+      endif
+      
+   ret <- start in:0
+   if ret < 0
+         exit -1
+      endif
+      
+   
+   para <- getenv "#1"
+   if para=""
+      pid <- 0
+   else
+      pid <- integer para
+   endif
+   
+   para <- getenv "#2"
+   if para=""
+      timeout <- 0
+   else
+      timeout <- integer para
+   endif
+   
+   para <- getenv "#3"
+   if para=""
+      filter_number <- 1      
+   else
+      filter_number <- integer para 
+   endif
+ 
+  
+   while filter_number > 0
+   
+      ret <- open "dmx:0.[filter_number]"
+      if ret < 0
+         exit -1
+      endif
+         
+      section "dmx:0.[filter_number]" buff:8096:1 "pid:[pid]"
+      
+      ret <- wait_data "dmx:0.[filter_number]" timeout
+      if ret < 0
+         exit -1
+      endif 
+      
+      ret <-close "dmx:0.[filter_number]"
+      if ret < 0
+         exit -1
+      endif      
+      
+      filter_number <- sub filter_number 1
+   wend
+ 
+  
+   print "Everything OK!"
+   
+   exit 1
+   
+END

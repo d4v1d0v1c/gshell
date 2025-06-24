@@ -1,0 +1,29 @@
+VAR string para
+MAIN    
+    para <- getenv "#1"
+    
+    print "para:[para]"
+    
+    open vid:0    
+    clip vid:0 "[para]"
+    
+  
+    para <- getenv "#2"
+    
+    print "para:[para]"
+    
+    open vid:1    
+    clip vid:1 "[para]"
+    
+%play for 10 seconds and finish test	
+
+   wait 20000
+   
+   print "ret=[ret]"
+   if ret<0
+    exit -1
+   else
+    exit 1
+   endif 
+   
+END

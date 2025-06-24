@@ -1,0 +1,32 @@
+MAIN
+% create surface
+    open
+    show
+
+%mmap buffers    
+    mmap 0
+    mmap 1
+    
+%set test patterns    
+    fill 0 pallete
+    fill 1 marker
+
+%demonstrate buffer exchange    
+    queue 0
+    wait 40
+    queue 1
+    wait 40
+    dequeue 0
+    queue 0
+    
+%demonstrate on-screen update    
+    wait 500
+    fill 0 marker
+    wait 500
+    fill 0 pallete 
+    wait 500
+    
+% switch buffers    
+    dequeue 1
+    queue 1
+END

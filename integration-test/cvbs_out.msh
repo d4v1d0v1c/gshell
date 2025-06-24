@@ -1,0 +1,48 @@
+%Magic' to get CVBS on output
+
+VAR int reg, val
+
+SUB write_voutsel
+   reg <- rfr 0x00076024
+   reg <- and reg 0xffffc3ff
+   val <- mult val 1024
+   reg <- or reg val
+   wtr 0x00076024 reg
+return
+
+SUB write_obuf3
+   reg <- rfr 0x00076028
+   reg <- and reg 0xffffffbf
+   val <- mult val 64
+   reg <- or reg val
+   wtr 0x00076028 reg
+return
+
+SUB write_dcgu_sel   
+   reg <- rfr 0x00084008
+   reg <- and reg 0xff8fffff
+   val <- mult val 1048576
+   reg <- or reg val
+   wtr 0x00084008 reg 
+return
+
+SUB write_dvp_cmd      
+   wtr 0x0003c054 val 
+return
+
+MAIN
+
+   val <- 0
+   call write_dcgu_sel
+   
+   val <- 2
+   call write_dvp_cmd
+   
+   val <- 225
+   call write_dvp_cmd
+      
+   val <- 10
+   call write_voutsel
+   val <- 0
+   call write_obuf3
+END

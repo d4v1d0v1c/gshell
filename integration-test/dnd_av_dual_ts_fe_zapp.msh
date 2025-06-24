@@ -1,0 +1,177 @@
+VAR int freq1,vpid1,vpid2,apid1,apid2,pcrpid1,pcrpid2,type1,type2,ret,tmpret,tmp,i
+VAR string para
+MAIN
+% common part with tuning and in selection    
+    ret <- 0
+    i   <- 0
+    
+    para <- getenv "#1"    
+    tmp <- integer para
+    
+    if tmp=0      
+      print "Wrong parameter, need freq"
+    else
+      freq1 <- tmp
+      open fe:1
+      open in:1
+      open dmx:0
+      route fe:1 in:1
+	   route in:1 dmx:0
+	   ret <- start fe:1 "ter:[freq1]"      
+	   tmpret <- start dmx:0
+	   ret <- add ret tmpret
+	 	tmpret <- start in:1
+	 	ret <- add ret tmpret
+    endif            
+    
+    print "freq1=[freq1]"
+   
+    open in:0      
+    open dmx:1
+    route in:0 dmx:1
+    tmpret <- start dmx:1
+    ret <- add ret tmpret
+    tmpret <- start in:0
+    ret <- add ret tmpret
+   
+% end of common part
+
+% get video 1 PID    
+    para <- getenv "#2"
+    if para=""
+      vpid1 <- 0x100
+    else
+      vpid1 <- integer para
+    endif
+    
+% get video 2 PID    
+    para <- getenv "#3"
+    if para=""
+      vpid2 <- 0x100
+    else
+      vpid2 <- integer para
+    endif    
+
+% get audio 1 PID    
+    para <- getenv "#4"
+    if para=""
+      apid1 <- 0x101
+    else
+      apid1 <- integer para
+    endif
+    
+% get audio 2 PID    
+    para <- getenv "#5"
+    if para=""
+      apid2 <- 0x101
+    else
+      apid2 <- integer para
+    endif    
+    
+% get pcr 1 PID    
+    para <- getenv "#6"
+    if para=""
+      pcrpid1 <- 0x100
+    else
+      pcrpid1 <- integer para
+    endif
+    
+
+% get pcr PID    
+    para <- getenv "#7"
+    if para=""
+      pcrpid2 <- 0x100
+    else
+      pcrpid2 <- integer para
+    endif    
+    
+% start audio and video on MAIN
+
+	 open vid:0
+	 open dmx:0.0
+	 open aud:0
+	 	 	 
+	 open dmx:0.1
+	
+	 apply aud:0 "mode:[type1]"	
+	 
+	 route dmx:0.0 vid:0
+	 setpid dmx:0.0 "pid:[vpid1]"
+	 route dmx:0.1 aud:0
+	 setpid dmx:0.1 "pid:[apid1]"
+	 
+	 tmpret <- start vid:0
+	 ret <- add ret tmpret
+	 tmpret <- start aud:0	 
+	 ret <- add ret tmpret
+	 
+	 open dmx:0.2
+	 pcr dmx:0.2 "pid:[pcrpid1]"
+	 tmpret <- start dmx:0.2
+	 ret <- add ret tmpret
+	 tmpret <- start dmx:0.0
+	 ret <- add ret tmpret
+	 tmpret <- start dmx:0.1
+	 ret <- add ret tmpret
+	 
+% start audio and video on SLAVE
+
+	 open vid:1
+	 open dmx:1.0
+	 open aud:1
+	 	 	 
+	 open dmx:1.1
+	
+	 apply aud:1 "mode:[type2]"	
+	 
+	 route dmx:1.0 vid:1
+	 setpid dmx:1.0 "pid:[vpid2]"
+	 route dmx:1.1 aud:1
+	 setpid dmx:1.1 "pid:[apid2]"
+	 
+	 tmpret <- start vid:1
+	 ret <- add ret tmpret
+	 tmpret <- start aud:1	 
+	 ret <- add ret tmpret
+	 
+	 open dmx:1.2
+	 pcr dmx:1.2 "pid:[pcrpid2]"
+	 tmpret <- start dmx:1.2
+	 ret <- add ret tmpret
+	 tmpret <- start dmx:1.0
+	 ret <- add ret tmpret
+	 tmpret <- start dmx:1.1
+	 ret <- add ret tmpret	 
+	 
+%play with start stop sequence for 4 times and finish test
+
+    while i<4
+   
+       wait 5000
+    
+       print "wrap:[i]"
+       
+       stop vid:0  
+       stop vid:1 	 
+   	 stop aud:0	    	 
+   	 stop aud:1
+   	 
+   	 wait 1000
+   	 
+   	 start vid:0 
+   	 start vid:1  	 
+   	 start aud:0   	 
+   	 start aud:1
+      
+       i <- add i 1
+    
+    wend
+   
+   print "ret=[ret]"
+   if ret<0
+    exit -1
+   else
+    exit 1
+   endif         	 
+   
+END

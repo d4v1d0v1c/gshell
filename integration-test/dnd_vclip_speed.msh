@@ -1,0 +1,29 @@
+VAR int ret
+VAR string para
+MAIN    
+    ret <- 0
+    
+    para <- getenv "#1"
+    
+    print "file:[para]"
+    
+    open vid:0    
+    clip vid:0 "[para]"
+ 
+%set decode mode   
+    para <- getenv "#2"    
+    print "speed:[para]" 
+
+    apply vid:0 "speed:[para]"
+        
+%play for 10 seconds and finish test	
+
+   wait 20000
+
+   if ret<0
+    exit -1
+   else
+    exit 1
+   endif 
+   
+END

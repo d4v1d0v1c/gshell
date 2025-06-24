@@ -1,0 +1,9 @@
+MAIN
+    open vid:0
+    clip vid:0 /usr/mic.m2v
+    wait 10000
+    open vid:1
+    clip vid:1 /usr/VCTSD.m2v
+    
+    
+END

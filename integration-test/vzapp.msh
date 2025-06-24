@@ -1,0 +1,13 @@
+MAIN
+    while 1==1
+       wait 30000
+       stop dmx:0.0
+       setpid dmx:0.0 pid:600
+       start dmx:0.0
+       
+       wait 30000
+       stop dmx:0.0
+       setpid dmx:0.0 pid:620
+       start dmx:0.0
+    wend
+END

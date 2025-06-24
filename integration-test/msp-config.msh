@@ -1,0 +1,69 @@
+%Magic' to get DTV sound on speakers and headphones ;-)
+VAR string para
+VAR int volume
+
+para <- getenv "#1"
+if para=""
+   volume <- 0x30
+else
+   volume <- integer para
+   volume <- sub volume 50
+   volume <- mult volume 400
+endif   
+
+%abp_msp_hp_enable
+%abp_msp_analog_power_up
+rfr 0x00071824
+wtr 0x00071848 0x00000002
+wtr 0x00071848 0x00008000
+
+rfr 0x00071824
+wtr 0x00071848 0x00000041
+wtr 0x00071848 0x00006263
+
+rfr 0x00071824
+wtr 0x00071848 0x00008052
+wtr 0x00071848 0x0000003a
+
+rfr 0x00071824
+wtr 0x00071848 0x00008053
+wtr 0x00071848 0x0000003b
+
+
+%volume set
+rfr 0x00071824
+wtr 0x00071848 0x00000052
+wtr 0x00071848 volume
+
+%volume set
+rfr 0x00071824
+wtr 0x00071848 0x00000053
+wtr 0x00071848 volume
+
+%abp_msp_main_enable
+%abp_msp_analog_power_up
+rfr 0x00071824
+wtr 0x00071848 0x00000002
+wtr 0x00071848 0x00008000
+
+rfr 0x00071824
+wtr 0x00071848 0x0000003f
+wtr 0x00071848 0x00006465
+
+rfr 0x00071824
+wtr 0x00071848 0x00008054
+wtr 0x00071848 0x0000003a
+
+rfr 0x00071824
+wtr 0x00071848 0x00008055
+wtr 0x00071848 0x0000003b
+
+%volume set
+rfr 0x00071824
+wtr 0x00071848 0x00000054
+wtr 0x00071848 volume
+
+%volume set
+rfr 0x00071824
+wtr 0x00071848 0x00000055
+wtr 0x00071848 volume

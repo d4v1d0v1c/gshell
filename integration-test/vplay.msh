@@ -1,0 +1,8 @@
+MAIN
+    open vid:0
+    open dmx:0.0
+    route dmx:0.0 vid:0
+    setpid dmx:0.0 pid:600
+    start vid:0
+    start dmx:0.0
+END

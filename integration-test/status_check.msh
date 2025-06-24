@@ -1,0 +1,104 @@
+VAR string dev, sdev, para
+VAR int ret, id, max, mask, value, dmx
+
+SUB wait_4_status
+   if dmx=1
+      mask <- mult mask 0x1000
+      value <- mult value 0x1000
+   endif
+   ret <- status sdev mask value
+return
+
+MAIN
+   dmx<-0
+   
+   dev <- getenv "#1"
+   if dev=""
+      exit -1
+   endif 
+   if dev="dmx"
+      dmx<-1
+   endif
+   
+   para <- getenv "#2"
+   if para=""
+      exit -1
+   else
+      max <- integer para
+   endif 
+   
+   id <- 0
+   while id < max
+      dev <- getenv "#1"
+      dev <- "[dev]:[id]"
+      ret <- open dev
+      if ret < 0
+         exit -1
+      endif
+      
+      para <- getenv "#3"
+      if para=""
+         sdev <- dev
+         print "selected [dev]"
+      else
+         dmx<-0
+         sdev <- "[dev].[para]"
+         ret <- open sdev
+         if ret < 0
+            exit -1
+         endif
+         print "selected [sdev]"
+      endif 
+      
+      print "Set timeout..."
+      ret <- apply dev timeout:1000
+      if ret < 0
+            exit -1
+         endif
+         
+      print "Check START..."
+      ret <- start dev
+      if ret < 0
+         exit -1
+      endif
+      mask <- 0x1
+      value <- 0x1
+      call wait_4_status
+      if ret < 0
+         exit -1
+      endif
+      
+      print "Check STOP..."
+      ret <- stop dev
+      if ret < 0
+         exit -1
+      endif
+      
+      mask <- 0x3
+      value <- 0x0
+      call wait_4_status
+      if ret < 0
+         exit -1
+      endif
+      
+      print "Check CLOSE..."
+      ret <- close dev
+      if ret < 0
+         exit -1
+      endif
+      
+      if dev != sdev
+         ret <- close sdev
+         if ret < 0
+            exit -1
+         endif
+      endif
+      
+      id <- add id 1
+      
+   wend
+   print "Everything OK!"
+   exit 1
+   
+END
+

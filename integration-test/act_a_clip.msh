@@ -1,0 +1,99 @@
+VAR int type,ret,tmpret,tmp
+VAR string para,test_file
+MAIN
+
+% MSP initialization part ************************************************
+
+%abp_msp_analog_power_up
+rfr 0x00071824
+wtr 0x00071848 0x00000002
+wtr 0x00071848 0x00008000
+
+%route Vol1 and Vol2 to headphones
+rfr 0x00071824
+wtr 0x00071848 0x00000041
+wtr 0x00071848 0x00006263
+
+%route Vol1 and Vol2 to speakers
+rfr 0x00071824
+wtr 0x00071848 0x0000003f
+wtr 0x00071848 0x00006263
+
+%set source for Vol1 to MAIN L
+rfr 0x00071824
+wtr 0x00071848 0x00008052
+wtr 0x00071848 0x0000003a
+
+%set source for Vol2 to MAIN R
+rfr 0x00071824
+wtr 0x00071848 0x00008053
+wtr 0x00071848 0x0000003b
+
+%Vol1 set
+rfr 0x00071824
+wtr 0x00071848 0x00000052
+wtr 0x00071848 0
+
+%Vol2 set
+rfr 0x00071824
+wtr 0x00071848 0x00000053
+wtr 0x00071848 0
+
+%Master Vol set
+rfr 0x00071824
+wtr 0x00071848 0x00000050
+wtr 0x00071848 0
+
+% end of MSP initialization part *********************************************
+
+% get decoder type (standard)
+    para <- getenv "#1"   
+    if para="AUTO"    
+      type <- 1
+    endif
+    if para="PCM"
+      type <- 2
+    endif
+    if para="MPEG"
+      type <- 32
+    endif
+    if para="AC3"
+      type <- 64
+    endif
+    if para="DTS"
+      type <- 128        
+    endif
+    if para=""
+      type <- 32
+    endif
+    
+
+% get file name
+    para <- getenv "#2"
+    if para=""
+      test_file <- ""
+    else
+      test_file <- para
+    endif
+    
+% start audio on MAIN
+
+	 open aud:0
+	 
+	 apply aud:0 ad:0
+	 apply aud:0 sync:0
+	 apply aud:0 "mode:[type]"	 
+	 
+	 clip aud:0 "[test_file]"
+	 
+	 
+%play for 20 seconds and finish test	 
+	 wait 20000
+	 print "ret=[ret]"
+	 if ret<0
+       exit -1
+    else
+       exit 1
+    endif	         	 
+    
+END

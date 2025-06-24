@@ -1,0 +1,18 @@
+MAIN
+% Tune to DVB-T 666MHz    
+    open fe:1
+    open in:1
+    open dmx:0
+    route fe:1 in:1
+    route in:1 dmx:0
+    start fe:1 ter:666000
+    start dmx:0
+    start in:1
+% Start decoding video only, PID: 385 
+    open vid:0
+    open dmx:0.0
+    route dmx:0.0 vid:0
+    setpid dmx:0.0 pid:385
+    start vid:0
+    start dmx:0.0
+END

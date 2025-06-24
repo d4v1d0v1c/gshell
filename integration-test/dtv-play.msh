@@ -1,0 +1,24 @@
+
+VAR int ret
+MAIN
+   ret <- tune 1 658000
+   if ret !=0
+      print "tuning failed"
+      exit -1
+   endif
+   wait 500
+   ret <- tsroute ts2
+   if ret !=0
+      print "ts routing failed"
+      exit -1
+   endif
+   wait 500
+   ret <- avplay 561 562 561
+   if ret !=0
+      print "avplay failed"
+      exit -1
+   endif
+   wait 500
+
+   %exit 1
+END

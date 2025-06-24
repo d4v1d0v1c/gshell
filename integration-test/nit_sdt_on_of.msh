@@ -1,0 +1,33 @@
+VAR int ret, i
+
+MAIN
+   i <- 0   
+   print ">>>>>>>>> Frequent on/off NIT SDT tables (100 times)..."
+   while i < 100
+      print "Loop [i]..."
+ 
+% create filters     
+      ret <- nit_create 1
+      if ret < 0
+      print "Failed to set NIT"
+         exit -1   % FAIL
+      endif
+      
+      ret <- sdt_create 2
+      if ret < 0
+      print "Failed to set NIT"
+         exit -1   % FAIL
+      endif
+      
+      wait 200
+      
+% remove filters       
+      ret <- tbl_del 1     
+      ret <- tbl_del 2
+     
+      
+      wait 200            
+    
+      i <- add i 1
+   wend
+END

@@ -1,0 +1,46 @@
+﻿% Tune to DVB-S freq=11597MHz, timeout=3000, symbol rate=22000000, pol_type=0, polarization=1 (0=horizontal,
+1=vertical)
+MAIN
+%   memmode 100
+    open fe:0
+    open in:1
+    open dmx:0
+    route fe:0 in:1
+    route in:1 dmx:0
+    start fe:0 sat:11952:3000:27500000:0:0
+    start dmx:0
+    start in:1
+% Start decoding video only, PID: 289
+    open vid:0
+    open dmx:0.0
+    route dmx:0.0 vid:0
+    setpid dmx:0.0 pid:289
+    start vid:0
+    start dmx:0.0
+
+    open aud:0
+    open dmx:0.1
+    route dmx:0.1 aud:0
+    setpid dmx:0.1 pid:290
+    start aud:0
+    start dmx:0.1
+
+%    while 1==1
+%       wait 2000
+%       stop dmx:0.0
+%       setpid dmx:0.0 pid:165
+%       start dmx:0.0
+%       stop dmx:0.1
+%       setpid dmx:0.1 pid:100
+%       start dmx:0.1
+%
+%       wait 2000
+%       stop dmx:0.0
+%       setpid dmx:0.0 pid:165
+%       start dmx:0.0
+%       stop dmx:0.1
+%       setpid dmx:0.1 pid:100
+%       start dmx:0.1
+%    wend
+END
+

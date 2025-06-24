@@ -1,0 +1,72 @@
+VAR string names,track,para
+VAR int i,j
+VAR int ret, timeout
+
+
+SUB show_playlist
+   i <- 0
+   track <- element names i
+   while track != ""
+      print "([i]) [track].mp3"
+      i <- add i 1
+      track <- element names i
+   wend 
+return
+
+SUB find_selection
+   i <- 0
+   j <- 0
+   track <- element names j
+   while track != ""
+      if track == para
+         i <- j
+      endif
+      j <- add j 1
+      track <- element names j
+   wend 
+return
+
+MAIN
+   % Playlist initialization
+   i <- 0
+   names <- "baker,blues,easy,feeling,firestarter,frozen,hero,kashmir,killer,kiss,life,logical,message,metallica,modell,paranoid,power,riders,tainted,tonight"
+
+   % Display content
+    call show_playlist 
+   
+   % Get initial position
+   para <- getenv "#1"
+   if para=""
+      i <- 0
+   else
+      call find_selection
+   endif 
+   
+   para <- getenv "#2"
+   if para=""
+      timeout <- 0x0fffffff
+   else
+      timeout <- integer para
+   endif 
+   
+   % Loop thru playlist
+   track <- element names i
+   while 1 == 1
+      astop
+      ret <- avidle a 1000
+      
+      if track != ""
+         print "*******  Playing [track].mp3 *********"
+         aclip "/tmp/[track].mp3"
+         ret <- avstatus a 500
+         if ret >= 0
+            ret <- avidle a timeout
+         endif
+         i <- add i 1
+      else
+         i <- 0
+      endif
+      
+      track <- element names i
+   wend
+END

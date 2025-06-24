@@ -1,0 +1,4 @@
+MAIN
+    open vid:0
+    clip vid:0 /usr/VCTHD.m2v
+END

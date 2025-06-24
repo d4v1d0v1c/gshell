@@ -1,0 +1,27 @@
+VAR int ret, i
+
+MAIN
+   i <- 0
+   tune 0
+   ret <- tune 626000 500
+   if ret!= 0
+      print "Tuning failed"
+      exit -1   % FAIL
+   endif
+   print ">>>>>>>>> Frequent on/off..."
+   while i < 100
+      print "Loop [i]..."
+      ret <- filter 0 0 0
+      if ret == 0
+      print "Failed to set PMT"
+         exit -1   % FAIL
+      endif
+      
+      ret <- del 0
+      if ret != 0
+      print "Failed to destroy PMT"
+         exit -1   % FAIL
+      endif
+      i <- add i 1
+   wend
+END

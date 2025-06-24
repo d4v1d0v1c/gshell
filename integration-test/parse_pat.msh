@@ -1,0 +1,58 @@
+VAR string freq f
+VAR int freq_i ret end i
+
+MAIN
+
+   %freq <- "1775,1845,2265,4740,4820,4900,4980,5220,5300,5380,5460,5540,5620,5700,6180,6260,6340,6900,6980,7060,7140,7220,7300,7380,0"
+   freq <- "5140, 5540, 0"
+   
+   end <- 0
+   ret <- -1
+   i <- 0
+   
+   while end == 0
+      tune 0
+      
+      filter 0 0x00 0
+      f <- element freq i
+      freq_i <- integer f
+      freq_i <- mult freq_i 100
+      
+      if freq_i > 0
+         print "### TEST ### Tuning to [freq_i]........."
+         ret <- tune freq_i 1000
+         if ret == 0
+         
+            ret <- pat_create 0
+            if ret == 0
+               print "Failed to create pat table"
+               exit -1   % FAIL
+            endif
+            
+            ret <- tbl_wait 0 20000
+            if ret < 0
+               print "Failed to query for channels"
+               exit -1   % FAIL
+            endif
+            
+            ret <- tbl_del 0
+            if ret != 0
+               print "Failed to destroy scan"
+               exit -1   % FAIL
+            endif
+         
+         endif
+      else
+         end <- 1
+      endif
+      
+      del 0
+      
+      i <- add i 1
+      
+      wait 5000
+   wend
+   
+   finish
+   
+END

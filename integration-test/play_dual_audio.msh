@@ -1,0 +1,81 @@
+VAR string freq f
+VAR int ret, i, freq_i, idx
+VAR int temp
+VAR string audio_file
+
+MAIN
+   i <- 0
+   idx <- 0
+   freq <- "554000"
+   audio_file <- getenv #1
+
+   %abp_msp_analog_power_up
+	rfr 0x00071824
+	wtr 0x00071848 0x00000002
+	wtr 0x00071848 0x00008000
+	
+	% set MAIN5_SRC to sccin1_1	-	headphone
+	rfr 0x00071824
+	wtr 0x00071848 0x00000041
+	wtr 0x00071848 0x00003a63
+	
+	% set MAIN6_SRC to sccin2_1	-	headphone
+	rfr 0x00071824
+	wtr 0x00071848 0x00000041
+	wtr 0x00071848 0x00003a42
+
+   print ">>>>>>>>> Frequency scan..."
+   while 1 == 1
+      print "Loop [i]..."
+      
+      tune 0
+      
+      f <- element freq idx
+      freq_i <- integer f
+      if freq_i == 0
+         idx <- 0
+         f <- element freq idx
+         freq_i <- integer f
+      endif
+      
+      idx <- add idx 1
+      
+      print "Tuning to [freq_i]"
+      ret <- tune freq_i 500
+      if ret == 0
+      
+	      ret <- scan_create 0
+	      if ret == 0
+	      print "Failed to set scan"
+	         exit -1   % FAIL
+	      endif
+	      
+	      ret <- tbl_wait 0 20000
+	      if ret < 0
+	         print "Failed to query for channels"
+	         exit -1   % FAIL
+	      endif
+	      
+	      ret <- tbl_dtvfull 0
+	      if ret == 0
+		     print "Playing audio clip"
+		     ret <- play_audio_clip audio_file
+		     if ret != 0
+			     print "Failed to play audio clip"
+			     exit -1   % FAIL
+		     endif
+		     finish
+	      endif
+	      
+	  
+	      ret <- tbl_del 0
+	      if ret != 0
+	      print "Failed to destroy scan"
+	         exit -1   % FAIL
+	      endif
+	  
+	  endif
+      
+      i <- add i 1
+   wend
+END

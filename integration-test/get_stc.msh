@@ -1,0 +1,53 @@
+VAR string freq f
+VAR int ret, i, freq_i, idx
+VAR int vpid apid ppid
+
+MAIN
+   i <- 0
+   idx <- 0
+   freq <- "554000, 0"
+   vpid <- 600
+   apid <- 601
+   ppid <- 600
+   
+   print "Tuning..."
+   while i < 10
+      print "Loop [i]..."
+      
+      tune 0
+      
+      f <- element freq idx
+      freq_i <- integer f
+      if freq_i == 0
+         idx <- 0
+         f <- element freq idx
+         freq_i <- integer f
+      endif
+      
+      idx <- add idx 1
+      
+      print "Tuning to [freq_i]"
+      ret <- tune freq_i 500
+      if ret == 0
+      
+	      ret <- avplay vpid apid ppid mpeg 
+         if ret != 0
+            print "Failed to play"
+            exit -1   % FAIL
+         endif 
+         
+         wait 10000
+	      
+	      get_stc
+	      
+	      finish
+	  
+	   endif
+      
+      i <- add i 1
+     
+   wend
+   
+   finish
+   
+END

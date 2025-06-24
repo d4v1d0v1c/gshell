@@ -1,0 +1,50 @@
+VAR int ret, pid, timeout
+VAR string para, dev
+
+
+MAIN
+   
+   open in:0
+   open dmx:0
+   route in:0 dmx:0
+   start dmx:0
+   start in:0
+   
+   para <- getenv "#1"
+   if para=""
+      pid <- 0
+   else
+      pid <- integer para
+   endif
+   
+   para <- getenv "#2"
+   if para=""
+      timeout <- 0
+   else
+      timeout <- integer para
+   endif
+    
+   open in:0
+   open dmx:0
+   route in:0 dmx:0
+   start dmx:0
+   start in:0 
+   
+   ret <-open dmx:0.0
+   if ret < 0
+      exit -1
+   endif
+      
+   section dmx:0.0 buff:8096:1 "pid:[pid]"
+   
+   ret <- wait_data dmx:0.0 timeout
+
+   if ret < 0
+      exit -1
+   endif
+   
+   print "Everything OK!"
+   
+exit 1
+   
+END

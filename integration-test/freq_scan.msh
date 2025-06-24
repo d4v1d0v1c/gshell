@@ -1,0 +1,71 @@
+VAR int ret, i, freq_i
+
+MAIN
+	i <- 0
+	freq_i <- 177500
+      
+	mapi.dtv.tsroute ts2 main
+	
+	ret <- mapi.si.set_service_list 0 "/usr/etc/service_list"
+	if ret != 0
+	 print "Failed to set service list file"
+	else
+   	print ">>>>>>>>> Frequency scan..."
+   	while freq_i < 230000
+   		print "Loop [i]..."
+   		mapi.dtv.tune 1 0
+   		print "Tuning to [freq_i]"
+   		ret <- mapi.dtv.tune 1 freq_i 500
+   		if ret!= 0
+   			print "Tuning failed"
+   		else
+   			ret <- mapi.si.scan_create 0
+   			if ret == 0
+   				print "Failed to set scan"
+            else     
+   				ret <- mapi.si.tbl_wait 0 20000
+   				if ret < 0
+   					print "Failed to query for channels"
+   				else
+   						ret <- mapi.si.tbl_del 0
+   						if ret != 0
+   							print "Failed to destroy scan"
+   						endif	
+   				endif
+   			endif
+   		endif
+   	   freq_i <- add freq_i 7000	
+   	   i <- add i 1
+     wend
+     
+      i <- 0
+	   freq_i <- 474000
+   	while freq_i < 860000
+   		print "Loop [i]..."
+   		mapi.dtv.tune 1 0
+   		print "Tuning to [freq_i]"
+   		ret <- mapi.dtv.tune 1 freq_i 500
+   		if ret!= 0
+   			print "Tuning failed"
+   		else
+   			ret <- mapi.si.scan_create 0
+   			if ret == 0
+   				print "Failed to set scan"
+            else     
+   				ret <- mapi.si.tbl_wait 0 20000
+   				if ret < 0
+   					print "Failed to query for channels"
+   				else
+   						ret <- mapi.si.tbl_del 0
+   						if ret != 0
+   							print "Failed to destroy scan"
+   						endif	
+   				endif
+   			endif
+   		endif
+   	   freq_i <- add freq_i 8000	
+   	   i <- add i 1
+     wend
+   endif 
+   print "Autoscan finished!"
+END

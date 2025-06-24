@@ -1,0 +1,17 @@
+
+open dmx:4
+clip dmx:4 /mnt/usb/a/TS/uk188.ts
+
+open dmx:4.0
+open vid:0
+route dmx:4.0 vid:0
+setpid dmx:4.0 pid:600
+start dmx:4.0
+start vid:0
+
+open dmx:0.1
+open aud:0
+route dmx:0.1 aud:0
+setpid dmx:0.1 pid:601
+start dmx:0.1
+start aud:0

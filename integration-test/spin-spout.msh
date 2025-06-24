@@ -1,0 +1,12 @@
+%input is from spdif, AD is decoding and copying to spdif out
+open sin:0    
+open sout:0
+open aud:0    
+route sin:0 aud:0
+start sin:0    
+clone aud:0 sout:0
+start aud:0
+start sout:0
+
+    
+    

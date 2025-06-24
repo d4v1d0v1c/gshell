@@ -1,0 +1,48 @@
+VAR int vpid apid cdbmode
+VAR string temp
+MAIN
+    temp <- getenv "#1"
+    if temp=""
+       vpid <- 256
+    else
+       vpid <- integer temp
+    endif   
+    temp <- getenv "#2"
+    if temp=""
+       apid <- 257
+    else
+       apid <- integer temp
+    endif   
+    temp <- getenv "#3"
+    if temp=""
+       cdbmode <- 51
+    else
+       cdbmode <- integer temp
+    endif   
+    
+    memmode cdbmode
+    
+    open in:0
+    open dmx:0
+    route in:0 dmx:0
+    start dmx:0
+    start in:0   
+
+    open vid:0
+    open dmx:0.0
+    route dmx:0.0 vid:0
+    setpid dmx:0.0 "pid:[vpid]"
+    start vid:0
+    start dmx:0.0
+
+    open dmx:0.2
+    pcr dmx:0.2 "pid:[vpid]"
+    start dmx:0.2
+    
+    open aud:0
+    open dmx:0.1
+    route dmx:0.1 aud:0
+    setpid dmx:0.1 "pid:[apid]"
+    start aud:0
+    start dmx:0.1
+END

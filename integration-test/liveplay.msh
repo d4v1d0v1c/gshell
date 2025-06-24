@@ -1,0 +1,45 @@
+MAIN
+   memmode 100
+% Tune to DVB-T 666MHz    
+    open fe:1
+    open in:1
+    open dmx:0
+    route fe:1 in:1
+    route in:1 dmx:0
+    start fe:1 ter:666000
+    start dmx:0
+    start in:1   
+% Start decoding video only, PID: 600 
+    open vid:0
+    open dmx:0.0
+    route dmx:0.0 vid:0
+    setpid dmx:0.0 pid:225
+    start vid:0
+    start dmx:0.0
+    
+%    open aud:0
+%    open dmx:0.1
+%    route dmx:0.1 aud:0
+%    setpid dmx:0.1 pid:226
+%    start aud:0
+%    start dmx:0.1
+    
+    while 1==1
+       wait 5000
+       stop dmx:0.0
+       setpid dmx:0.0 pid:225
+       start dmx:0.0
+%       stop dmx:0.1
+%       setpid dmx:0.1 pid:226
+%       start dmx:0.1
+       
+       wait 5000
+       stop dmx:0.0
+       setpid dmx:0.0 pid:385
+       start dmx:0.0
+%       stop dmx:0.1
+%       setpid dmx:0.1 pid:386
+%       start dmx:0.1
+    wend
+END
+

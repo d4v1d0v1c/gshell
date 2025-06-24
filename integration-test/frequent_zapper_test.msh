@@ -1,0 +1,297 @@
+VAR int freq,vpid,apid,pcrpid,type,ret,tmpret,tmp,repeat i
+VAR string para
+MAIN
+% common part with tuning and in selection    
+
+    ret <- 0
+    i <- 0
+    
+    para <- getenv "#1"    
+    tmp <- integer para
+    
+    if tmp=0
+      ret <- open in:0
+      if ret < 0
+            exit -1
+      endif
+            
+		ret <- open dmx:0
+		if ret < 0
+            exit -1
+      endif
+      
+		route in:0 dmx:0
+		
+		if ret < 0
+            exit -1
+      endif
+      
+		ret <- start dmx:0		
+		if ret < 0
+            exit -1
+      endif
+      
+	 	ret <- start in:0
+	 	if ret < 0
+            exit -1
+      endif      
+	 	
+    else
+      freq <- tmp
+      ret <- open fe:1
+      if ret < 0
+            exit -1
+      endif      
+	 	
+      ret <- open in:1
+      if ret < 0
+            exit -1
+      endif      
+	 	
+      ret <- open dmx:0
+      if ret < 0
+            exit -1
+      endif      
+	 	
+      route fe:1 in:1
+      
+	   route in:1 dmx:0  
+	 	
+	   ret <- start fe:1 "ter:[freq]"      
+	   if ret < 0
+            exit -1
+      endif      
+	 	
+	   ret <- start dmx:0	   
+	   if ret < 0
+            exit -1
+      endif      
+	 	
+	 	ret <- start in:1
+	 	if ret < 0
+            exit -1
+      endif      
+	 		 	
+    endif
+ 
+% get video PID    
+    para <- getenv "#2"
+    if para=""
+      vpid <- 0x100
+    else
+      vpid <- integer para
+    endif
+
+% get audio PID    
+    para <- getenv "#3"
+    if para=""
+      apid <- 0x101
+    else
+      apid <- integer para
+    endif
+    
+% get pcr PID    
+    para <- getenv "#4"
+    if para=""
+      pcrpid <- 0x100
+    else
+      pcrpid <- integer para
+    endif
+
+% get repeat number    
+     para <- getenv "#5"
+   if para=""
+      repeat <- 1
+   else
+      repeat <- integer para
+   endif
+    
+% start audio and video on MAIN
+
+	 ret <- open vid:0
+	 if ret < 0
+            exit -1
+      endif      
+	 		
+	 ret <- open dmx:0.0
+	 if ret < 0
+            exit -1
+      endif      
+	 		
+	 ret <- open aud:0
+	 if ret < 0
+            exit -1
+      endif      
+	 		
+	 	 	 
+	 ret <- open dmx:0.1
+	 if ret < 0
+            exit -1
+      endif      
+	 			
+	 apply aud:0 "mode:[type]"	
+	 
+	 route dmx:0.0 vid:0
+	 setpid dmx:0.0 "pid:[vpid]"
+	 route dmx:0.1 aud:0
+	 setpid dmx:0.1 "pid:[apid]"
+	 
+	 ret <- start vid:0
+	 if ret < 0
+            exit -1
+      endif      
+	 			 
+	 ret <- start aud:0	 
+	 if ret < 0
+            exit -1
+      endif      
+	 			 
+	 ret <- open dmx:0.2
+	 if ret < 0
+            exit -1
+      endif
+      
+	 pcr dmx:0.2 "pid:[pcrpid]"
+	 
+	 ret <- start dmx:0.2
+	 if ret < 0
+            exit -1
+      endif
+      
+	 ret <- start dmx:0.0
+	 if ret < 0
+            exit -1
+      endif
+      
+	 ret <- start dmx:0.1
+	 if ret < 0
+            exit -1
+      endif
+      	 
+%play with start stop sequence for 4 times and finish test
+
+    while repeat > 0
+      
+      wait 100
+            
+      ret <- stop vid:0
+      if ret < 0
+            exit -1
+      endif
+            
+      ret <- stop aud:0
+      if ret < 0
+            exit -1
+      endif
+      
+      ret <- stop dmx:0.0
+      if ret < 0
+            exit -1
+      endif
+      
+      ret <- stop dmx:0.1
+      if ret < 0
+            exit -1
+      endif
+      
+      ret <- stop dmx:0.2
+      if ret < 0
+            exit -1
+      endif
+      
+      
+      setpid dmx:0.0 pid:610
+      setpid dmx:0.1 pid:611
+      setpid dmx:0.2 pid:610
+      
+      ret <- start vid:0
+      if ret < 0
+            exit -1
+      endif
+            
+      ret <- start aud:0
+      if ret < 0
+            exit -1
+      endif
+      
+      ret <- start dmx:0.0
+      if ret < 0
+            exit -1
+      endif
+      
+      ret <- start dmx:0.1
+      if ret < 0
+            exit -1
+      endif
+      
+      ret <- start dmx:0.2
+      if ret < 0
+            exit -1
+      endif
+            
+      wait 300
+      
+      ret <- stop vid:0
+      if ret < 0
+            exit -1
+      endif
+            
+      ret <- stop aud:0
+      if ret < 0
+            exit -1
+      endif
+      
+      ret <- stop dmx:0.0
+      if ret < 0
+            exit -1
+      endif
+      
+      ret <- stop dmx:0.1
+      if ret < 0
+            exit -1
+      endif
+      
+      ret <- stop dmx:0.2
+      if ret < 0
+            exit -1
+      endif
+      
+      
+      setpid dmx:0.0 pid:600
+      setpid dmx:0.1 pid:601
+      setpid dmx:0.2 pid:600
+      
+      ret <- start vid:0
+      if ret < 0
+            exit -1
+      endif
+            
+      ret <- start aud:0
+      if ret < 0
+            exit -1
+      endif
+      
+      ret <- start dmx:0.0
+      if ret < 0
+            exit -1
+      endif
+      
+      ret <- start dmx:0.1
+      if ret < 0
+            exit -1
+      endif
+      
+      ret <- start dmx:0.2
+      if ret < 0
+            exit -1
+      endif     
+      
+      
+      repeat <- sub repeat 1
+   wend
+   
+   print "Everything OK!"
+   
+   exit 1        	 
+   
+END

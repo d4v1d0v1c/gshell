@@ -1,0 +1,138 @@
+VAR int type,cp,mute,ret,tmpret,tmp
+VAR string para
+MAIN
+
+% MSP initialization part ************************************************
+
+%abp_msp_analog_power_up
+rfr 0x00071824
+wtr 0x00071848 0x00000002
+wtr 0x00071848 0x00008000
+
+%route Vol1 and Vol2 to headphones
+rfr 0x00071824
+wtr 0x00071848 0x00000041
+wtr 0x00071848 0x00006263
+
+%route Vol1 and Vol2 to speakers
+rfr 0x00071824
+wtr 0x00071848 0x0000003f
+wtr 0x00071848 0x00006263
+
+%set source for Vol1 to AUX L
+rfr 0x00071824
+wtr 0x00071848 0x00008052
+wtr 0x00071848 0x00000042
+
+%set source for Vol2 to AUX R
+rfr 0x00071824
+wtr 0x00071848 0x00008053
+wtr 0x00071848 0x00000043
+
+%Vol1 set
+rfr 0x00071824
+wtr 0x00071848 0x00000052
+wtr 0x00071848 0
+
+%Vol2 set
+rfr 0x00071824
+wtr 0x00071848 0x00000053
+wtr 0x00071848 0
+
+%Master Vol set
+rfr 0x00071824
+wtr 0x00071848 0x00000050
+wtr 0x00071848 0
+
+%Enable SPDIF1 in, source SPDIF_IN
+rfr 0x00071824
+wtr 0x00071848 0x00000004
+wtr 0x00071848 0x00008000
+
+%Enable SPDIF2 in, source SPDIF_IN
+rfr 0x00071824
+wtr 0x00071848 0x00000008
+wtr 0x00071848 0x00008000
+
+%Rote DTV spdif out to SPDIF Out pin
+rfr 0x00071824
+wtr 0x00071848 0x00000003
+wtr 0x00071848 0x00000600
+
+% end of MSP initialization part *********************************************
+    
+% get decoder type (standard)
+    para <- getenv "#1"   
+    if para="AUTO"    
+      type <- 1
+    endif
+    if para="PCM"
+      type <- 2
+    endif
+    if para="MPEG"
+      type <- 32
+    endif
+    if para="AC3"
+      type <- 64
+    endif
+    if para="DTS"
+      type <- 128        
+    endif
+    if para=""
+      type <- 32
+    endif
+        
+% get copy parameter
+    para <- getenv "#2"
+    if para=""
+      cp <- 0
+    else
+      cp <- integer para
+    endif
+
+% get mute parameter
+    para <- getenv "#3"
+    if para=""
+      mute <- 0
+    else
+      mute <- integer para
+    endif
+    
+% start audio on MAIN
+	 open sin:1    	 
+	 open aud:1    
+	 
+	 if cp>0
+	 	open sout:0
+	 	clone aud:1 sout:0
+	 endif	 	 	 	 
+	 
+	 apply aud:1 ad:0
+	 apply aud:1 sync:1
+	 apply aud:1 "mode:[type]"	 
+	 apply aud:1 "mute:[mute]"	 
+	 	 
+	 route sin:1 aud:1
+	 
+	 tmpret <- start sin:1    
+	 ret <- add ret tmpret	
+	 if cp>0
+	   tmpret <- start sout:0
+	   ret <- add ret tmpret
+	 endif 
+	 tmpret <- start aud:1	 
+	 ret <- add ret tmpret
+	 
+	 
+	 
+	 
+%play for 20 seconds and finish test	 
+	 wait 20000
+	 print "ret=[ret]"
+	 if ret<0
+       exit -1
+    else
+       exit 1
+    endif	         	 
+    
+END

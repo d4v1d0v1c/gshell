@@ -1,0 +1,21 @@
+VAR int i
+MAIN
+   i <- 0
+   
+   while 1==1
+      print "Pass [i]........."
+      
+      filter 0 0x10 0
+      filter 1 0x48 0
+    
+      del 0
+      filter 0 0x10 0
+      
+      %wait 200
+      
+      del 0
+      del 1
+      
+      i <- add i 1
+   wend
+END

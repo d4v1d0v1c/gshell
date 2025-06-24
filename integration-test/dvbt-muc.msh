@@ -1,0 +1,70 @@
+VAR string name,freq,vpid,apid,channel,n
+VAR int freq_i,vpid_i,apid_i
+VAR int i
+
+SUB select_channel
+    print "Select channel:"
+    i <- 0
+    while i<6
+       n <- element name i
+       print "([i]) [n]"
+       i <- add i 1
+    wend    
+     
+    n <- getc
+    i <- integer n
+    if i<6   
+       channel <- element name i
+       n <- element freq i
+       freq_i <- integer n
+       freq_i <- mult freq_i 1000
+       n <- element vpid i
+       vpid_i <- integer n
+       n <- element apid i
+       apid_i <- integer n
+    else
+       channel <- ""
+       print "Channel [channel] not found"
+    endif
+return
+
+MAIN
+    i <- 0
+    name <- "n24,zdf,sat1,rtl,pro7,diver"
+    freq <- "666,658,666,642,666,842"
+    vpid <- "225,545,385,337,305,256"
+    apid <- "226,546,386,338,306,272"
+
+ 
+      call select_channel
+      memmode 51
+      if channel!=""
+         open fe:1
+         open in:1
+         open dmx:0
+         route fe:1 in:1
+         route in:1 dmx:0
+         start fe:1 "ter:[freq_i]"
+         start dmx:0
+         start in:1   
+         
+         open vid:0
+         open dmx:0.0
+         route dmx:0.0 vid:0
+         setpid dmx:0.0 "pid:[vpid_i]"
+         start vid:0
+         start dmx:0.0
+      
+         open aud:0
+         open dmx:0.1
+         route dmx:0.1 aud:0
+         setpid dmx:0.1 "pid:[apid_i]"
+         start aud:0
+         start dmx:0.1
+      
+         open dmx:0.2
+         pcr dmx:0.2 "pid:[vpid_i]"
+         start dmx:0.2
+                     
+      endif
+END

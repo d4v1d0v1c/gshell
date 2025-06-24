@@ -1,0 +1,58 @@
+VAR string freq f
+VAR int ret, i, freq_i, idx
+
+MAIN
+   i <- 0
+   idx <- 0
+   freq <- "706000,714000, 0"
+   
+   print ">>>>>>>>> Frequent scan..."
+   while 1 == 1
+      print "Loop [i]..."
+      
+      tune 0
+      
+      f <- element freq idx
+      freq_i <- integer f
+      if freq_i == 0
+         idx <- 0
+         f <- element freq idx
+         freq_i <- integer f
+      endif
+      
+      idx <- add idx 1
+      
+      print "Tuning to [freq_i]"
+      ret <- tune freq_i 500
+      if ret!= 0
+         print "Tuning failed"
+         exit -1   % FAIL
+      endif
+      
+      ret <- scan_create 0
+      if ret < 0
+      print "Failed to set scan"
+         exit -1   % FAIL
+      endif
+      
+      ret <- tbl_wait 0 20000
+      if ret < 0
+         print "Failed to query for channels"
+         exit -1   % FAIL
+      endif
+      
+      ret <- scan_wait 0 5000
+      if ret < 0
+         print "Failed to loop thru channels"
+         exit -1   % FAIL
+      endif
+      
+      ret <- tbl_del 0
+      if ret != 0
+      print "Failed to destroy scan"
+         exit -1   % FAIL
+      endif
+      
+      i <- add i 1
+   wend
+END

@@ -1,0 +1,60 @@
+VAR int ret, i
+
+
+MAIN
+   i <- 0
+   
+   print ">>>>>>>>> Frequent PAT..."
+   
+   while 1==1
+
+      print "Pass [i]........."
+      
+      %create PAT
+      ret <- filter 0 0 0
+      if ret == 0
+         print "Failed to set PAT #1"
+         exit -1   % FAIL
+      endif
+
+      %create PMT
+      ret <- filter 1 4671 0
+      if ret == 0
+         print "Failed to set PMT"
+         exit -1   % FAIL
+      endif
+    
+
+      %delete PAT
+      ret <- del 0
+      if ret != 0
+         print "Failed to destroy PAT #1"
+         exit -1   % FAIL
+      endif
+
+      %create PAT
+      ret <- filter 0 0 0
+      if ret == 0
+         print "Failed to set PAT #2"
+         exit -1   % FAIL
+      endif
+
+       
+
+      %delete all   
+      ret <- del 0
+      if ret != 0
+         print "Failed to destroy PAT #2"
+         exit -1   % FAIL
+      endif
+      ret <- del 1
+      if ret != 0
+         print "Failed to destroy PMT"
+         exit -1   % FAIL
+      endif
+
+      i <- add i 1
+
+   wend
+   
+END

@@ -1,0 +1,27 @@
+VAR int ret
+VAR string para
+MAIN    
+    ret <- 0
+    
+    para <- getenv "#1"
+    
+    print "file:[para]"
+    
+    open vid:0    
+    clip vid:0 "[para]"
+ 
+%set freeze mode   
+ 
+    apply vid:0 playback:freeze
+        
+%play for 10 seconds and finish test	
+
+   wait 10000
+
+   if ret<0
+    exit -1
+   else
+    exit 1
+   endif 
+   
+END

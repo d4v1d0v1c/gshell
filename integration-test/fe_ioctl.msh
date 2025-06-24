@@ -1,0 +1,150 @@
+% LVDS 
+% info
+% dtv-mshell ../../data/fe_ioctl.msh sat 0 554000 1000 getcap 
+% dtv-mshell ../../data/fe_ioctl.msh ter 1 554000 1000 getcap
+% dtv-mshell ../../data/fe_ioctl.msh cab 2 554000 1000 getcap
+% connect is same, I connect in all cases
+% dtv-mshell ../../data/fe_ioctl.msh sat 0 554000 1000 getcap 
+% dtv-mshell ../../data/fe_ioctl.msh ter 1 554000 1000 getcap
+% dtv-mshell ../../data/fe_ioctl.msh cab 2 554000 1000 getcap
+% status
+% dtv-mshell ../../data/fe_ioctl.msh sat 0 554000 1000 getstatus 
+% dtv-mshell ../../data/fe_ioctl.msh ter 1 554000 1000 getstatus
+% dtv-mshell ../../data/fe_ioctl.msh cab 2 554000 1000 getstatus
+% statistics
+% dtv-mshell ../../data/fe_ioctl.msh sat 0 554000 1000 getstat
+% dtv-mshell ../../data/fe_ioctl.msh ter 1 554000 1000 getstat
+% dtv-mshell ../../data/fe_ioctl.msh cab 2 554000 1000 getstat
+% event is bacally same, because I check event in all test
+% dtv-mshell ../../data/fe_ioctl.msh sat 0 554000 1000 getstat
+% dtv-mshell ../../data/fe_ioctl.msh ter 1 554000 1000 getstat
+% dtv-mshell ../../data/fe_ioctl.msh cab 2 554000 1000 getstat
+% drx39xyk; drxk
+% info
+% dtv-mshell ../../data/fe_ioctl.msh ter 1 554000 1000 getcap 
+% dtv-mshell ../../data/fe_ioctl.msh ana 2 418100 1000 getcap 
+% dtv-mshell ../../data/fe_ioctl.msh cab 0 418100 1000 getcap 
+% connect is same
+% dtv-mshell ../../data/fe_ioctl.msh ter 1 554000 1000 getcap 
+% dtv-mshell ../../data/fe_ioctl.msh ana 2 418100 1000 getcap 
+% dtv-mshell ../../data/fe_ioctl.msh cab 0 418100 1000 getcap 
+% status
+% dtv-mshell ../../data/fe_ioctl.msh ter 1 554000 1000 getstatus
+% dtv-mshell ../../data/fe_ioctl.msh ana 2 418100 1000 getstatus 
+% dtv-mshell ../../data/fe_ioctl.msh cab 0 418100 1000 getstatus
+% statistics
+% dtv-mshell ../../data/fe_ioctl.msh ter 1 554000 1000 getstat
+% dtv-mshell ../../data/fe_ioctl.msh ana 2 418100 1000 getstat 
+% dtv-mshell ../../data/fe_ioctl.msh cab 0 418100 1000 getstat
+% event is checked in all cases
+% dtv-mshell ../../data/fe_ioctl.msh ter 1 554000 1000 getstat
+% dtv-mshell ../../data/fe_ioctl.msh ana 2 418100 1000 getstat 
+% dtv-mshell ../../data/fe_ioctl.msh cab 0 418100 1000 getstat
+
+
+% Timeout: test is pass if return -1!!!
+% dtv-mshell ../../data/fe_ioctl.msh ter 1 554000 0 getstat
+% dtv-mshell ../../data/fe_ioctl.msh ana 2 418100 0 getstat 
+% dtv-mshell ../../data/fe_ioctl.msh cab 0 418100 0 getstat
+
+VAR int ret,freq,index,time,symbolrate,modulation
+VAR string para,type,ioctl
+MAIN
+    para <- getenv "#1"
+    type <- para
+
+    para <- getenv "#2"
+    if para=""
+      index <- 1
+    else
+      index <- integer para
+    endif
+
+    para <- getenv "#3"
+    freq <- integer para
+
+    para <- getenv "#4"
+    time <- integer para
+
+if type="cab"
+    
+    para <- getenv "#5"
+
+    symbolrate <- integer para
+    
+    para <- getenv "#6"
+
+    modulation <- integer para
+    
+    para <- getenv "#7"
+
+else
+
+   para <- getenv "#5"
+
+endif
+
+
+    if para=""
+      ioctl <- "getstat"
+    else
+      ioctl <- para
+    endif
+
+    print "freq=[freq]"
+    print "index=[index]"
+    print "type=[type]"
+    print "ioctl=[ioctl]"
+    print "time=[time]"
+    
+if type="cab"
+    
+    print "symbolrate=[symbolrate]"
+    
+    print "modulation=[modulation]"
+
+endif
+
+    print "Open device"
+    open "fe:[index]"
+
+    print "Init event"
+    event "fe:[index]"   
+
+    print "Start tuning"
+
+if type="cab"
+
+    ret <- start "fe:[index]" "[type]:[freq]:[time]:[symbolrate]:[modulation]"
+
+else
+
+    ret <- start "fe:[index]" "[type]:[freq]:[time]"
+
+endif
+
+    print "ret=[ret]"
+    if ret<0
+       exit -1
+    endif
+
+    print "Wait for event"
+    ret <- event_wait "fe:[index]" 0xf 0x0 2000
+    if ret < 0
+        exit -1
+    endif
+
+    print "Check ioctl"
+    ret <- apply "fe:[index]" "[ioctl]"
+    print "ret=[ret]"
+
+    print "Stop device"
+    stop "fe:[index]"
+    close "fe:[index]"
+
+    if ret<0
+       exit -1
+    else
+       exit 1
+    endif
+END 

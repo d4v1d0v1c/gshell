@@ -1,0 +1,57 @@
+% 1 is instance
+% dtv-mshell /path_to_script/fe_test_get_status ter:1:554000:getstat
+% dtv-mshell /path_to_script/fe_test_get_status ter:1:554000:getstatus
+
+VAR int ret,freq,type,ioctl,index
+VAR string para
+MAIN
+    para <- getenv "#1"
+    if para!="ter"
+      type <- "ter"
+    else
+      type <- para
+    endif
+
+    para <- getenv "#2"
+    if para=""
+      index <- 1
+    else
+      index <- integer para
+    endif
+
+    para <- getenv "#3"
+    if para=""
+      freq <- 554000
+    else
+      freq <- integer para
+    endif
+
+    para <- getenv "#4"
+    if para=""
+      ioctl <- getstat
+    else
+      ioctl <- para
+    endif
+
+    print "freq=[freq]"
+    print "index=[index]"
+    print "type=[type]"
+    print "ioctl=[ioctl]"
+
+    open "fe:[index]"
+    ret <- start "fe:[index]" "[type]:[freq]"
+    if ret<0
+       exit -1
+    endif
+
+    ret <- apply "fe:[index]" [ioctl]
+    stop "fe:[index]"
+    close "fe:[index]"
+
+    if ret<0
+       exit -1
+    else
+       exit 1
+    endif
+END 
+

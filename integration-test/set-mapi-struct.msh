@@ -1,0 +1,28 @@
+
+VAR int ret
+MAIN
+   mapiinfo
+   wait 500
+   niminfo
+   wait 500
+   mapiclean
+   wait 500
+   niminfo
+   wait 500
+   mapiset ts1 0 0 0 0 0
+   wait 500
+   mapiinfo prepared
+   wait 500
+   print "setting now -wait for return"
+   mapiset set
+   if ret!=0
+    print "ret not 0"
+   else
+    print "ret is 0"
+   endif
+   wait 500
+   mapiinfo
+   wait 500
+   niminfo
+   exit -1
+END

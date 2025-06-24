@@ -1,0 +1,71 @@
+%ebi_nor_1001_erase_flash: dtv-mshell ../../data/mtd.msh 1 0 0
+%ebi_nor_1002_write      : dtv-mshell ../../data/mtd.msh 0 0 1
+%ebi_nor_1003_read_flash : dtv-mshell ../../data/mtd.msh 0 1 0
+%ebi_nor_1004_read_flash_block: dtv-mshell ../../data/mtd.msh 1 1 1
+
+VAR int ret,wr,re,er,fd
+VAR string para
+
+MAIN
+   para <- getenv "#1"
+   er <- integer para
+
+   para <- getenv "#2"
+   wr <- integer para
+
+   para <- getenv "#3"
+   re <- integer para   
+   
+   print "er=[er]"
+   print "wr=[wr]"
+   print "re=[re]"
+
+ 	 print "Open /dev/mtd1" 
+   fd <- mtd_open 1
+   if fd <= 0       
+      exit -1
+   endif
+      
+   if er == 1
+      print "Preparing for erasing:" 
+      ret <- mtd_eraseall fd 1
+   else
+      ret <- 0
+   endif
+
+   if ret != 0       
+      exit -1
+   endif
+   print "Done" 
+
+   if wr == 1
+      print "Preparing for writing:" 
+      ret <- mtd_writeall fd 1
+   else
+      ret <- 0
+   endif   
+
+   if ret != 0       
+      exit -1
+   endif
+   print "Done" 
+
+   if re == 1
+      print "Preparing for reading:" 
+      ret <- mtd_readall fd 1
+   else
+      ret <- 0
+   endif
+
+   if ret != 0       
+      exit -1
+   endif
+
+   print "Closing /dev/mtd0" 
+   ret <- mtd_close fd
+   if ret != 0       
+       exit -1
+   endif
+
+   exit 1
+END

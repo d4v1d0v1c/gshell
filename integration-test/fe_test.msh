@@ -1,0 +1,105 @@
+VAR int ret,freq,time,band,hp_code,lp_code,tx_mode,gi,hier,cons
+VAR string para
+VAR string type
+
+% fe:X ter:freq:time:band:hp_code:lp_code:cons:tx_mode:gi:hier
+% band: 0[8], 1[7], 2[6]
+% hp_code: 1[NONE],2[1_2],4[2_3],8[3_4],18[4_5],32[5_6],64[6_7],128[7_8],256[8_9],512[AUTO]
+% lp_code: 1[NONE],2[1_2],4[2_3],8[3_4],18[4_5],32[5_6],64[6_7],128[7_8],256[8_9],512[AUTO]
+% cons: 1[QPSK],2[QAM_16],4[QAM_32],8[QAM_64],16[QAM_128],32[QAM_256],64[QAM_AUTO]
+% tx_mode: 0[2K],1[8K],2[AUTO]
+% gi:0[1_32],1[1_16],2[1_8],3[1_4],4[AUTO]
+% hier:0[NONE],1[H_1],2[H_2],3[H_4],4[AUTO]
+
+MAIN
+    para <- getenv "#1"
+    if para!="ter"
+      type <- "ter"
+    else
+      type <- para
+    endif
+
+    para <- getenv "#2"
+    if para=""
+      freq <- 666000
+    else
+      freq <- integer para
+    endif
+        
+    para <- getenv "#3"
+    if para=""
+      time <- 1000
+    else
+      time <- integer para
+    endif
+
+    para <- getenv "#4"
+    if para=""
+      band <- 0
+    else
+      band <- integer para
+    endif
+
+    para <- getenv "#5"
+    if para=""
+      hp_code <- 512
+    else
+      hp_code <- integer para
+    endif
+
+    para <- getenv "#6"
+    if para=""
+      lp_code <- 512
+    else
+      lp_code <- integer para
+    endif
+
+    para <- getenv "#7"
+    if para=""
+      cons <- 64
+    else
+      cons <- integer para
+    endif
+
+    para <- getenv "#8"
+    if para=""
+      tx_mode <- 1
+    else
+      tx_mode <- integer para
+    endif
+
+    para <- getenv "#9"
+    if para=""
+      gi <- 0
+    else
+      gi <- integer para
+    endif
+
+    para <- getenv "#10"
+    if para=""
+      hier <- 0
+    else
+      hier <- integer para
+    endif
+
+    print "type=[type]"
+    print "freq=[freq]"
+    print "time=[time]"
+    print "band=[band]"
+    print "hp_code=[hp_code]"
+    print "lp_code=[lp_code]"
+    print "cons=[cons]"
+    print "tx_mode=[tx_mode]"
+    print "gi=[gi]"
+    print "hier=[hier]"
+
+    open fe:1
+    ret <- start fe:1 "[type]:[freq]:[time]:[band]:[hp_code]:[lp_code]:[cons]:[tx_mode]:[gi]:[hier]"
+    stop fe:1
+    close fe:1
+    if ret<0
+       exit -1
+    else
+       exit 1
+    endif
+END

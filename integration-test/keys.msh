@@ -1,0 +1,46 @@
+% routing ...
+open fe:1
+open in:0
+open dmx:0
+route fe:1 in:0
+route in:0 dmx:0
+
+% tune ...
+start fe:1 ter:12345
+start dmx:0
+start in:0
+
+% start video ...
+open vid:0
+open dmx:0.0
+route dmx:0.0 vid:0
+setpid dmx:0.0 pid:4128
+start vid:0
+start dmx:0.0
+
+% prepare key entry ...
+open dmx:0.1
+key dmx:0.1
+setkey dmx:0.1 pids:4128
+
+wait 5000
+
+% apply new PID assigment to this key
+setpid dmx:0.0 pid:4144
+setkey dmx:0.1 pids:4144
+setkey dmx:0.1 odd:0x6a:0x87:0x39:0x2a:0x86:0x38:0x97:0x55  even:0xb7:0x54:0x2c:0x37:0x43:0xb8:0x0f:0x0a
+
+wait 5000
+
+% apply new PID assigment to this key
+setpid dmx:0.0 pid:4176
+setkey dmx:0.1 pids:4176
+setkey dmx:0.1 odd:0x50:0xcf:0xb4:0xd3:0xb6:0x8b:0x9e:0xdf  even:0x9b:0xf1:0xd2:0x5e:0x70:0x21:0x3c:0xcd
+
+wait 5000
+
+% apply new PID assigment to this key
+setpid dmx:0.0 pid:4112
+setkey dmx:0.1 pids:4112
+setkey dmx:0.1 odd:0xd0:0x48:0x88:0xa0:0xba:0x02:0x14:0xd0  even:0x1d:0x24:0x44:0x85:0x29:0x35:0x44:0xa2
+

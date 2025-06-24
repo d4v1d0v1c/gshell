@@ -1,0 +1,12 @@
+VAR int ret
+
+MAIN
+   ret <- tune 554000 500
+   if ret!= 0
+      print "Tuning failed"
+      exit -1   % FAIL
+   endif
+   
+   wait 3000
+   finish
+END

@@ -1,0 +1,24 @@
+VAR string freq f
+VAR int freq_i
+VAR int i
+
+MAIN
+
+   freq <- "1775,1845,1915,1985,2055,2125,2195,2265,4740,4820,4900,4980,5060,5140,5220,5300,5380,5460,5540,5620,5700,5780,5860,5940,6020,6100,6180,6260,6340,6420,6500,6580,6660,6740,6820,6900,6980,7060,7140,7220,7300,7380,7460"
+    
+    i <- 0
+    
+    open fe:1
+
+    while i<57
+    
+    f <- element freq i
+    freq_i <- integer f
+    freq_i <- mult freq_i 100
+    start fe:1 "ter:[freq_i]"
+    wait 5000
+    stop fe:1
+    i <- add i 1
+    
+    wend
+END

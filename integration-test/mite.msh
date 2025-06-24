@@ -1,0 +1,109 @@
+VAR int ret, i
+
+MAIN
+   while 1 == 1
+      tune 0
+      ret <- tune 626000 500
+      if ret!= 0
+         print "Tuning failed"
+         exit -1   % FAIL
+      endif
+      
+      ret <-avplay 600 601 600
+      if ret!= 0
+         print "Unable to set-up the playback"
+         exit -1   % FAIL
+      endif
+      
+      ret <- avstatus av 800
+      if ret < 0
+         print "Unable to lock on playback"
+         exit -1   % FAIL
+      endif
+      
+      % set-up PMT, SDT, NIT, EIT, TDT, etc
+      ret <- filter 0 0 0
+      ret <- filter 1 0x10 0
+      ret <- filter 2 0x11 0
+      ret <- filter 3 0x12 0
+      ret <- filter 4 0x14 0
+      
+      ret <- read 0 200
+      if ret == 0
+         print "Faled to get PMT"
+         exit -1   % FAIL
+      endif
+      print "PMT received size [ret]"
+      
+      
+      enable 0 0
+      
+      ret <- read 1 20000
+      if ret == 0
+         print "Faled to get NIT"
+         exit -1   % FAIL
+      endif
+      print "NIT received size [ret]"
+      
+      
+      enable 1 0
+      
+      ret <- read 2 10000
+      if ret == 0
+         print "Faled to get SDT"
+         exit -1   % FAIL
+      endif
+      print "SDT received size [ret]"
+      
+      
+      enable 2 0
+      
+      ret <- read 3 1000
+      if ret == 0
+         print "Faled to get EIT"
+         exit -1   % FAIL
+      endif
+      print "EIT received size [ret]"
+      
+      
+      enable 3 0
+      
+      ret <- read 4 1000
+      if ret == 0
+         print "Faled to get TDT"
+         exit -1   % FAIL
+      endif
+      print "TDT received size [ret]"
+      
+      enable 4 0
+      
+      ret <- del 0
+      ret <- del 1
+      ret <- del 2
+      ret <- del 3
+      ret <- del 4
+      avstop
+      
+      i <- 0
+      while i<30
+         ret <-avplay 600 601 600
+         if ret!= 0
+            print "Unable to set-up the playback"
+            exit -1   % FAIL
+         endif
+         
+         ret <- avstatus av 800
+         if ret < 0
+            print "Unable to lock on playback"
+            exit -1   % FAIL
+         endif
+         print "Succesful AV playback in [i] attempt "
+         avstop
+         i <- add i 1
+      wend
+      
+      %tune 0
+      
+      wait 1000
+   wend
+END

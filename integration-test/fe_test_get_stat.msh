@@ -1,0 +1,24 @@
+
+VAR int index,ret
+VAR string para
+% 
+% Get statistics of chosen fe
+%
+MAIN
+   para <- getenv "#1"
+   if para=""
+      index <- 1
+    else
+      index <- integer para
+    endif 
+
+    print "Open fe:[index]"
+    open "fe:[index]"      
+    ret <- apply "fe:[index]" getstat
+    close "fe:[index]"
+    if ret != 0
+       exit -1
+    endif
+    exit 1
+END
+

@@ -1,0 +1,97 @@
+VAR int freq,vpid,apid,pcrpid,type,ret,tmpret,tmp
+VAR string para
+MAIN
+% common part with tuning and in selection    
+    ret <- 0
+    para <- getenv "#1"    
+    tmp <- integer para
+    if tmp=0
+      open in:0      
+		open dmx:0
+		route in:0 dmx:0
+		tmpret <- start dmx:0
+		ret <- add ret tmpret
+	 	tmpret <- start in:0
+	 	ret <- add ret tmpret
+    else
+      freq <- tmp
+      open fe:1
+      open in:1
+      open dmx:0
+      route fe:1 in:1
+	   route in:1 dmx:0
+	   ret <- start fe:1 "ter:[freq]"      
+	   tmpret <- start dmx:0
+	   ret <- add ret tmpret
+	 	tmpret <- start in:1
+	 	ret <- add ret tmpret
+    endif
+            
+    print "freq=[freq]"
+% end of common part
+
+% get video PID    
+    para <- getenv "#2"
+    if para=""
+      vpid <- 0x100
+    else
+      vpid <- integer para
+    endif
+
+% get audio PID    
+    para <- getenv "#3"
+    if para=""
+      apid <- 0x101
+    else
+      apid <- integer para
+    endif
+    
+% get pcr PID    
+    para <- getenv "#4"
+    if para=""
+      pcrpid <- 0x100
+    else
+      pcrpid <- integer para
+    endif
+    
+% start audio and video on MAIN
+
+	 open vid:0
+	 open dmx:0.0
+	 open aud:0
+	 	 	 
+	 open dmx:0.1
+	
+	 apply aud:0 "mode:[type]"	
+	 
+	 route dmx:0.0 vid:0
+	 setpid dmx:0.0 "pid:[vpid]"
+	 route dmx:0.1 aud:0
+	 setpid dmx:0.1 "pid:[apid]"
+	 
+	 tmpret <- start vid:0
+	 ret <- add ret tmpret
+	 tmpret <- start aud:0	 
+	 ret <- add ret tmpret
+	 
+	 open dmx:0.2
+	 pcr dmx:0.2 "pid:[pcrpid]"
+	 tmpret <- start dmx:0.2
+	 ret <- add ret tmpret
+	 tmpret <- start dmx:0.0
+	 ret <- add ret tmpret
+	 tmpret <- start dmx:0.1
+	 ret <- add ret tmpret
+	 
+%play for 10 seconds and finish test	
+
+   wait 10000
+   
+   print "ret=[ret]"
+   if ret<0
+    exit -1
+   else
+    exit 1
+   endif         	 
+   
+END

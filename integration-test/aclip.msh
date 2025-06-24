@@ -1,0 +1,4 @@
+MAIN
+    open aud:0
+    clip aud:0 /usr/bal.mp2
+END

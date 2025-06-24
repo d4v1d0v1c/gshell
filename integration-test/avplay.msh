@@ -1,0 +1,88 @@
+VAR int ret,freq, int, vpid, ppid, apid
+VAR string para, amode
+MAIN
+    para <- getenv "#1"
+    if para=""
+      print "Frequency missing"
+      freq <- 626000
+    else
+      freq <- integer para
+    endif
+    
+    para <- getenv "#2"
+    if para=""
+      print "TSI missing"
+      int <- 1
+    else
+      int <- integer para
+    endif
+    
+    para <- getenv "#3"
+    if para=""
+      print "Video PID missing "
+      vpid <- 0x1fff
+    else
+      vpid <- integer para
+    endif
+    
+    para <- getenv "#4"
+    if para=""
+      print "PCR PID missing "
+      ppid <- 0x1fff
+    else
+      ppid <- integer para
+    endif
+    
+    para <- getenv "#5"
+    if para=""
+      print "Audio PID missing "
+      apid <- 0x1fff
+    else
+      apid <- integer para
+    endif
+    
+%    amode <- getenv "#6"
+%    if para=""
+%      print "Audio mode missing "
+%      amode <- "mpeg"
+%    endif
+    
+    
+    open fe:1
+    open "in:[int]"
+    open dmx:0
+    route fe:1 "in:[int]"
+    route "in:[int]" dmx:0
+    
+    if freq != 0
+      start fe:1 "ter:[freq]"
+    endif
+    
+    start dmx:0
+    start "in:[int]"  
+    
+    if vpid < 0x1fff
+       open vid:0
+       open dmx:0.0
+       route dmx:0.0 vid:0
+       setpid dmx:0.0 "pid:[vpid]"
+       start vid:0
+       start dmx:0.0
+    endif
+    
+    if apid < 0x1fff
+       open aud:0
+       open dmx:0.1
+       route dmx:0.1 aud:0
+       setpid dmx:0.1 "pid:[apid]"
+       start aud:0
+       start dmx:0.1
+    endif
+    
+    if ppid < 0x1fff
+       open dmx:0.2
+       pcr dmx:0.2 "pid:[ppid]"
+       start dmx:0.2
+    endif
+    
+END

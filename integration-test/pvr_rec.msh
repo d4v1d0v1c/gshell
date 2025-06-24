@@ -1,0 +1,10 @@
+open in:0
+open dmx:2
+route in:0 dmx:2
+start dmx:2
+start in:0   
+
+open dmx:2.0
+record dmx:2.0 /tmp/test3.ts buff:385024:1 tresh:24064 log
+setpid dmx:2.0 pids:610:611:ps620:621
+

@@ -1,0 +1,47 @@
+VAR string freq f
+VAR int freq_i
+VAR int i j
+
+MAIN
+
+   freq <- "1775,1845,2265,4740,4820,4900,4980,5220,5300,5380,5460,5540,5620,5700,6180,6260,6340,6900,6980,7060,7140,7220,7300,7380,0"
+   
+   i <- 0
+   
+   while 1==1
+      filter 0 0x00 0
+      filter 1 0x14 0
+      filter 2 0x11 0
+      filter 3 0x10 0
+      filter 4 0x00 0
+      f <- element freq i
+      freq_i <- integer f
+      freq_i <- mult freq_i 100
+      
+      if freq_i > 0
+         print "Tuning to [freq_i]........."
+         tune freq_i 1000
+         
+         j <- 0
+         while j<30
+            read 0
+            read 1
+            read 2
+            read 3
+            read 4
+            wait 30
+            j <- add j 1
+         wend
+         tune 0
+         i <- add i 1
+      else
+         i <- 0
+      endif
+      
+      del 0
+      del 1
+      del 2
+      del 3
+      del 4
+   wend
+END

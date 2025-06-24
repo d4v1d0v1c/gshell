@@ -1,0 +1,65 @@
+VAR int ret, i
+
+MAIN
+   i <- 0
+   tune 0
+   ret <- tune 626000 500
+   if ret!= 0
+      print "Tuning failed"
+      exit -1   % FAIL
+   endif
+   print ">>>>>>>>> Frequent disable..."
+   ret <- filter 0 0 0
+   if ret == 0
+      print "Failed to set PMT"
+      exit -1   % FAIL
+   endif
+   while i < 100
+      print "Loop [i]..."
+      
+      %print "Loop [i].0..."
+      ret <- enable 0 1
+      if ret != 0
+         print "Failed to enable PMT"
+         exit -1   % FAIL
+      endif
+      
+      %print "Loop [i].1..."
+      ret <- try_read 0 5000
+      if ret < 0
+         print "Failed to query PMT"
+         exit -1   % FAIL
+      endif
+      if ret == 0
+         print "Failed to detect PMT"
+         exit -1   % FAIL
+      endif
+      
+      %print "Loop [i].2..."
+      ret <- enable 0 0
+      if ret != 0
+         print "Failed to disable PMT"
+         exit -1   % FAIL
+      endif
+      
+      %print "Loop [i].3..."
+      ret <- read 0 1000
+      if ret < 0
+         print "Failed to read PMT"
+         exit -1   % FAIL
+      endif
+      if ret > 0
+         print "PMT not flushed"
+         exit -1   % FAIL 
+      endif
+      
+      i <- add i 1
+   wend
+   
+   %print "Loop [i].4..."
+   ret <- del 0
+   if ret != 0
+      print "Failed to destroy PMT"
+      exit -1   % FAIL
+   endif
+END

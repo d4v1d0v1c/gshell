@@ -1,0 +1,9 @@
+
+MAIN
+   wait 1000
+   mapi.dtv.tsroute ts2 main
+   wait 1000
+   mapi.dtv.tune 1 666000
+   wait 2000
+   mapi.dtv.avplay 225 226 225
+END

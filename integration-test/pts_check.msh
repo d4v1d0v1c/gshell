@@ -1,0 +1,71 @@
+VAR int ret, pid, pcr_pid, timeout, repeat
+VAR string para, dev
+
+
+MAIN
+   
+   open in:0
+   open dmx:0
+   route in:0 dmx:0
+   start dmx:0
+   start in:0
+   
+   para <- getenv "#1"
+   if para=""
+      pid <- 0
+   else
+      pid <- integer para
+   endif
+   
+   para <- getenv "#2"
+   if para=""
+      pcr_pid <- 0
+   else
+      pcr_pid <- integer para
+   endif
+   
+   para <- getenv "#3"
+   if para=""
+      timeout <- 0
+   else
+      timeout <- integer para
+   endif
+   
+   para <- getenv "#4"
+   if para=""
+      repeat <- 1
+   else
+      repeat <- integer para
+   endif
+    
+   ret <-open dmx:0.0
+   if ret < 0
+      exit -1
+   endif
+   
+   ret <-open dmx:0.1
+   if ret < 0
+      exit -1
+   endif
+      
+   pcr dmx:0.1 "pid:[pcr_pid]"
+   start dmx:0.1
+   
+   pes dmx:0.0 buff:16192:1 "pid:[pid]" tresh:500 hdr:0xc0
+   
+   while repeat > 0
+      ret <- wait_pts dmx:0.0 timeout
+     if ret < -90000
+         exit -1
+      endif
+      if ret > 90000
+         exit -1
+      endif
+      repeat <- sub repeat 1
+   wend
+   
+   print "Everything OK!"
+   
+exit 1
+   
+END

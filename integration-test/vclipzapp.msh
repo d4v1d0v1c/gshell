@@ -1,0 +1,13 @@
+MAIN
+    open vid:0
+while 1==1   
+    clip vid:0 /usr/VCTHD.m2v
+    wait 30000
+    stop vid:0
+    route null vid:0
+    clip vid:0 /usr/VCTHD.m2v
+    wait 30000
+    stop vid:0
+    route null vid:0
+ wend    
+END
