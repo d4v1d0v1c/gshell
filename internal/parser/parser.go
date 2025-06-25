@@ -8,14 +8,9 @@ import (
 	"github.com/d4v1d0v1c/gshell/internal/token"
 )
 
-type {
-	prefixParseFn func() ast.Expressions
-	infixParseFn func(ast.Expressions) ast.Expressions
-}
-
 type Parser struct {
-	l         *lexer.Lexer
-	errors    []string
+	l      *lexer.Lexer
+	errors []string
 
 	currToken token.Token
 	peekToken token.Token
@@ -23,6 +18,11 @@ type Parser struct {
 	prefixParseFns map[token.TokenType]prefixParseFn
 	infixParseFns  map[token.TokenType]infixParseFn
 }
+
+type (
+	prefixParseFn func() ast.Expression
+	infixParseFn  func(ast.Expression) ast.Expression
+)
 
 func New(l *lexer.Lexer) *Parser {
 	p := &Parser{
@@ -35,12 +35,12 @@ func New(l *lexer.Lexer) *Parser {
 	return p
 }
 
-func (p *Parser) registerPrefix(type token.TokenType, fn prefixFn) {
-	p.prefixParseFns[type] = fn
+func (p *Parser) registerPrefix(tokenType token.TokenType, fn prefixParseFn) {
+	p.prefixParseFns[tokenType] = fn
 }
 
-func (p *Parser) registerInfix(type token.TokenType, fn infixParseFn) {
-	p.infixParseFns[type] = fn
+func (p *Parser) registerInfix(tokenType token.TokenType, fn infixParseFn) {
+	p.infixParseFns[tokenType] = fn
 }
 
 func (p *Parser) Errors() []string { return p.errors }
@@ -130,4 +130,3 @@ func (p *Parser) parseReturnStatement() ast.Statement {
 	}
 	return statement
 }
-

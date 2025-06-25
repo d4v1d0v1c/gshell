@@ -8,7 +8,6 @@ import (
 )
 
 func TestString(t *testing.T) {
-
 	program := &ast.Program{
 		Statements: []ast.Statement{
 			&ast.LetStatement{
