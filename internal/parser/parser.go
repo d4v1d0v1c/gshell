@@ -8,11 +8,20 @@ import (
 	"github.com/d4v1d0v1c/gshell/internal/token"
 )
 
+type {
+	prefixParseFn func() ast.Expressions
+	infixParseFn func(ast.Expressions) ast.Expressions
+}
+
 type Parser struct {
 	l         *lexer.Lexer
+	errors    []string
+
 	currToken token.Token
 	peekToken token.Token
-	errors    []string
+
+	prefixParseFns map[token.TokenType]prefixParseFn
+	infixParseFns  map[token.TokenType]infixParseFn
 }
 
 func New(l *lexer.Lexer) *Parser {
@@ -24,6 +33,14 @@ func New(l *lexer.Lexer) *Parser {
 	p.nextToken()
 
 	return p
+}
+
+func (p *Parser) registerPrefix(type token.TokenType, fn prefixFn) {
+	p.prefixParseFns[type] = fn
+}
+
+func (p *Parser) registerInfix(type token.TokenType, fn infixParseFn) {
+	p.infixParseFns[type] = fn
 }
 
 func (p *Parser) Errors() []string { return p.errors }
@@ -112,5 +129,5 @@ func (p *Parser) parseReturnStatement() ast.Statement {
 		p.nextToken()
 	}
 	return statement
-
 }
+
