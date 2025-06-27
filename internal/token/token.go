@@ -7,59 +7,56 @@ type Token struct {
 	Literal string
 }
 
-var keywords = map[string]TokenType{
-	"fn":     FUNCTION,
-	"let":    LET,
-	"const":  CONST,
-	"var":    VAR,
-	"true":   TRUE,
-	"false":  FALSE,
-	"if":     IF,
-	"else":   ELSE,
-	"return": RETURN,
-	"ret":    RET,
-}
-
 const (
 	ILLEGAL = "ILLEGAL"
 	EOF     = "EOF"
-	INT     = "INT"   // 1, 2, 3, ...
-	IDENT   = "IDENT" // add, x, foobar
+
+	IDENT  = "IDENT"
+	INT     = "INT"
+	STRING = "STRING"
+
 	ASSIGN  = "="
 	PLUS    = "+"
 	MINUS   = "-"
 	BANG    = "!"
-	ASTERIX = "*"
+	ASTERISK = "*"
 	SLASH   = "/"
 
 	LT = "<"
 	GT = ">"
 
-	COMA      = ","
+	EQ     = "=="
+	NOT_EQ = "!="
+
+	COMMA     = ","
 	SEMICOLON = ";"
+	COLON     = ":"
 	LPAREN    = "("
 	RPAREN    = ")"
 
 	LBRACE = "{"
 	RBRACE = "}"
-	// keywords
-	FUNCTION = "fn"
+	LBRACKET  = "["
+	RBRACKET  = "]"
+
+	FUNCTION = "FUNCTION"
 	LET      = "LET"
-	CONST    = "CONST"
-	VAR      = "VAR"
 	TRUE     = "TRUE"
 	FALSE    = "FALSE"
 	IF       = "IF"
 	ELSE     = "ELSE"
 	RETURN   = "RETURN"
-	RET      = "RET"
-	EQ       = "=="
-	NOT_EQ   = "!="
-
-	COMMENT       = "//"
-	COMMENT_START = "/*"
-	COMMENT_END   = "*/"
 )
+
+var keywords = map[string]TokenType{
+	"fn":     FUNCTION,
+	"let":    LET,
+	"true":   TRUE,
+	"false":  FALSE,
+	"if":     IF,
+	"else":   ELSE,
+	"return": RETURN,
+}
 
 func LookupIdent(ident string) TokenType {
 	if tok, ok := keywords[ident]; ok {
